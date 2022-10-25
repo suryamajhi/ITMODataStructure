@@ -2,6 +2,7 @@
 using namespace std;
 
 // Use binary search for first occurance of element and last occurance of element.
+// Always maintain invariants.
 
 void count_sort(vector<int> &p, vector<int> &c){
 	int n = p.size();
@@ -89,6 +90,7 @@ bool good(string &t, string &s, vector<int> &p, int m){
 }
 
 
+
 int main(){
 	
 	ios::sync_with_stdio(0);
@@ -101,40 +103,44 @@ int main(){
 	
 	
 	p = suffix_array(t);
+	
+	
+
+	
 	int n;
 	cin >> n;
 	while(n--){
 		string s;
 		cin >> s;
-		int l = -1;           //bad
-		int r = t.size();     //good
+		int l = -1;           // a[l] < x 
+		int r = t.size();     // a[r] >= x
+		
+		// while(r > l + 1){
+		// 	int m = (r + l) / 2;
+		// 	if(good(t, s, p, m)){
+		// 		r = m;
+		// 	} else l = m;
+
+		// }
+		while(r > l + 1){
+			int m = (r + l) / 2;
+			if(t.substr(p[m], s.size()).compare(s) < 0){
+				l = m;
+			} else r = m;
+		}
+		int lIndex = r;
+		
+		l = -1;     // a[l] <= x
+		r = t.size(); // a[r] > x
 		
 		while(r > l + 1){
 			int m = (r + l) / 2;
-			if(good(t, s, p, m)){
-				r = m;
-			} else l = m;
-
+			if(t.substr(p[m], s.size()).compare(s)  <= 0){
+				l = m;
+			} else r = m;
 		}
-		if(l <= t.size() && r < p.size() && s == t.substr(p[r], s.size())){
-			int x = p[r];
-			int y = s.size();
-			
-			int count = 1;
-			
-			// to the left
-			int left = r - 1;
-			while(left >= 0 && t.substr(p[left], y) == s) {
-				count++, left--;
-			}
-			
-			// to the right
-			int right = r + 1;
-		 	while(right < t.size() && t.substr(p[right], y) == s) {
-		 		count++, right++;
-		 	}
-		 	cout << count << "\n";
-		}
-		else cout << "0" << "\n";
+		int rIndex = r;
+		
+		cout << rIndex - lIndex << "\n";
 	}
 }
